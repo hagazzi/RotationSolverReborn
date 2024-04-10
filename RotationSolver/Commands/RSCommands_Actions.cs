@@ -40,7 +40,7 @@ public static partial class RSCommands
             (int)(Service.Config.ClickingDelay.X * 1000), (int)(Service.Config.ClickingDelay.Y * 1000)))) return false;
         _lastClickTime = DateTime.Now;
 
-        if (!isGCD && ActionUpdater.NextAction is IBaseAction act1 && act1.Info.IsRealGCD) return false;
+        if (!isGCD && ActionUpdater.NextOGCDAction is IBaseAction act1 && act1.Info.IsRealGCD) return false;
 
         return true;
     }
@@ -55,31 +55,17 @@ public static partial class RSCommands
             return;
         }
 
-        var wrong = new Random().NextDouble() < Service.Config.MistakeRatio && ActionUpdater.WrongAction != null;
-        var nextAction = wrong ? ActionUpdater.WrongAction : ActionUpdater.NextAction;
+        IAction nextAction = null;
+        var isNextActionGCD = ActionUpdater.CanDoAction(out var doGCD);
+        if (doGCD)
+        {
+            nextAction = ActionUpdater.NextGCDAction;
+        }
+        else
+        {
+            nextAction = ActionUpdater.NextOGCDAction;
+        }
         if (nextAction == null) return;
-
-        if (wrong)
-        {
-            Svc.Toasts.ShowError(string.Format(UiString.ClickingMistakeMessage.Local(), nextAction));
-            ControlWindow.Wrong = nextAction;
-            ControlWindow.DidTime = DateTime.Now;
-        }
-
-        if (nextAction is BaseAction act1 && act1.Info.IsPvP && !act1.Setting.IsFriendly
-            && act1.TargetInfo.IsSingleTarget
-            && act1.Target.Target is PlayerCharacter p && p != Player.Object)
-        {
-            var hash = p.EncryptString();
-
-            //Don't attack authors and contributors!!
-            if ((DataCenter.AuthorHashes.ContainsKey(hash)
-                || DataCenter.ContributorsHash.Contains(hash)))
-            {
-                Svc.Chat.PrintError($"Please don't attack RS developers with RS by {act1}!");
-                return;
-            }
-        }
 
 #if DEBUG
         //if (nextAction is BaseAction acti)

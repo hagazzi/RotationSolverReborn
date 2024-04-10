@@ -15,7 +15,7 @@ internal static class ActionUpdater
 
     static RandomDelay _GCDDelay = new(() => Service.Config.WeaponDelay);
 
-    internal static IAction? NextAction { get; set; }
+    internal static IAction? NextOGCDAction { get; set; }
 
     private static StaticVfx? circle, sector, rectangle;
     private static IBaseAction? _nextGCDAction;
@@ -80,7 +80,7 @@ internal static class ActionUpdater
     internal static void ClearNextAction()
     {
         SetAction(0);
-        WrongAction = NextAction = NextGCDAction = null;
+        WrongAction = NextOGCDAction = NextGCDAction = null;
     }
 
     internal static void UpdateNextAction()
@@ -93,30 +93,9 @@ internal static class ActionUpdater
             if (localPlayer != null && customRotation != null
                 && customRotation.TryInvoke(out var newAction, out var gcdAction))
             {
-                if (Service.Config.MistakeRatio > 0)
-                {
-                    var actions = customRotation.AllActions.Where(a =>
-                    {
-                        if (a.ID == newAction?.ID) return false;
-                        if (a is IBaseAction action)
-                        {
-                            return !action.Setting.IsFriendly && action.Config.IsInMistake
-                            && action.Setting.TargetType != TargetType.Move
-                            && action.CanUse(out _, usedUp: true, skipStatusProvideCheck: true, skipClippingCheck: true, skipAoeCheck: true);
-                        }
-                        return false;
-                    });
+                NextOGCDAction = newAction;
 
-                    var count = actions.Count();
-                    WrongAction = count > 0 ? actions.ElementAt(_wrongRandom.Next(count)) : null;
-                }
-
-                NextAction = newAction;
-
-                if (gcdAction is IBaseAction GcdAction)
-                {
-                    NextGCDAction = GcdAction;
-                }
+                NextGCDAction = gcdAction as IBaseAction;
                 return;
             }
         }
@@ -125,7 +104,7 @@ internal static class ActionUpdater
             Svc.Log.Error(ex, "Failed to update next action.");
         }
 
-        WrongAction = NextAction = NextGCDAction = null;
+        WrongAction = NextOGCDAction = NextGCDAction = null;
     }
 
     private static void SetAction(uint id) => Svc.PluginInterface.GetOrCreateData("Avarice.ActionOverride", 
@@ -261,8 +240,9 @@ internal static class ActionUpdater
         _lastMP = player.CurrentMp;
     }
 
-    internal unsafe static bool CanDoAction()
+    internal unsafe static bool CanDoAction(out bool doGCD)
     {
+        doGCD = true;
         if (Svc.Condition[ConditionFlag.OccupiedInQuestEvent]
             || Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
             || Svc.Condition[ConditionFlag.Occupied33]
@@ -275,8 +255,8 @@ internal static class ActionUpdater
             || Svc.Condition[ConditionFlag.SufferingStatusAffliction2]
             || Svc.Condition[ConditionFlag.RolePlaying]
             || Svc.Condition[ConditionFlag.InFlight]
-            || ActionManager.Instance()->ActionQueued && NextAction != null
-                && ActionManager.Instance()->QueuedActionId != NextAction.AdjustedID
+            || ActionManager.Instance()->ActionQueued && NextOGCDAction != null
+                && ActionManager.Instance()->QueuedActionId != NextOGCDAction.AdjustedID
             || Player.Object.CurrentHp == 0) return false;
 
         var maxAhead = Service.Config.OverrideActionAheadTimer ? Service.Config.Action4Head : Math.Max(DataCenter.Ping, 0.08f);
@@ -289,7 +269,7 @@ internal static class ActionUpdater
         }
         if (canUseGCD) return false;
 
-        var nextAction = NextAction;
+        var nextAction = NextOGCDAction;
         if (nextAction == null) return false;
 
         //Skip when casting
@@ -298,6 +278,7 @@ internal static class ActionUpdater
         //The last one.
         if (ActionManagerHelper.GetCurrentAnimationLock() <= 0)
         {
+            doGCD = false;
             return RSCommands.CanDoAnAction(false);
         }
 

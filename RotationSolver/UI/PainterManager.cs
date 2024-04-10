@@ -191,7 +191,7 @@ internal static class PainterManager
         _target.Enable = _targetImage.Enable = false;
         if (!Service.Config.ShowTarget) return;
 
-        if (ActionUpdater.NextAction is not BaseAction act) return;
+        if (ActionUpdater.NextOGCDAction is not BaseAction act) return;
 
         var d = DateTime.Now.Millisecond / 1000f;
         var ratio = (float)DrawingExtensions.EaseFuncRemap(EaseFuncType.None, EaseFuncType.Cubic)(d);

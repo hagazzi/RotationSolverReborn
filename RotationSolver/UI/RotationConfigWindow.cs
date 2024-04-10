@@ -2532,7 +2532,7 @@ public partial class RotationConfigWindow : Window
         ImGui.Text(DataCenter.RightNowRotation?.GetType().GetCustomAttribute<RotationAttribute>()!.Name);
         ImGui.Text(DataCenter.SpecialType.ToString());
 
-        ImGui.Text(ActionUpdater.NextAction?.Name ?? "null");
+        ImGui.Text(ActionUpdater.NextOGCDAction?.Name ?? "null");
         ImGui.Text("Ability Remain: " + DataCenter.AbilityRemain.ToString());
         ImGui.Text("Action Remain: " + DataCenter.ActionRemain.ToString());
         ImGui.Text("Weapon Remain: " + DataCenter.WeaponRemain.ToString());

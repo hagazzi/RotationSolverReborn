@@ -553,7 +553,7 @@ internal class ControlWindow : CtrlWindow
 
         DrawIAction(ActionUpdater.NextGCDAction, gcd, 1);
 
-        var next = ActionUpdater.NextGCDAction != ActionUpdater.NextAction ? ActionUpdater.NextAction : null;
+        var next = ActionUpdater.NextGCDAction != ActionUpdater.NextOGCDAction ? ActionUpdater.NextOGCDAction : null;
 
         ImGui.SameLine();
 

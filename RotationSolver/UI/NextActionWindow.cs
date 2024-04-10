@@ -57,13 +57,13 @@ internal class NextActionWindow : Window
         else
         {
             precent = group->Elapsed / group->Total;
-            if(ActionUpdater.NextAction != ActionUpdater.NextGCDAction)
+            if(ActionUpdater.NextOGCDAction != ActionUpdater.NextGCDAction)
             {
                 precent++;
             }
         }
 
-        ControlWindow.DrawIAction(ActionUpdater.NextAction, width, precent);
+        ControlWindow.DrawIAction(ActionUpdater.NextOGCDAction, width, precent);
     }
 
     public static unsafe void DrawGcdCooldown(float width, bool drawTittle)

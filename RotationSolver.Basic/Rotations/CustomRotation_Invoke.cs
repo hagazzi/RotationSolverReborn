@@ -20,7 +20,8 @@ partial class CustomRotation
             IBaseAction.ActionPreview = false;
 
             CountingOfLastUsing = CountingOfCombatTimeUsing = 0;
-            newAction = Invoke(out gcdAction);
+            gcdAction = GCD();
+            newAction = Ability(gcdAction);
             if (InCombat || CountOfTracking == 0)
             {
                 AverageCountOfLastUsing =
@@ -152,40 +153,39 @@ partial class CustomRotation
         ActionSpeedAbility = SpeedAbility(out act) ? act : null;
     }
 
-    private IAction? Invoke(out IAction? gcdAction)
-    {
-        IBaseAction.ShouldEndSpecial = false;
-        IBaseAction.IgnoreClipping = true;
+    //private IAction? Invoke(out IAction? gcdAction)
+    //{
+    //    IBaseAction.ShouldEndSpecial = false;
+    //    IBaseAction.IgnoreClipping = true;
 
-        var countDown = Service.CountDownTime;
-        if (countDown > 0)
-        {
-            gcdAction = null;
-            return CountDownAction(countDown);
-        }
-        IBaseAction.TargetOverride = null;
+    //    var countDown = Service.CountDownTime;
+    //    if (countDown > 0)
+    //    {
+    //        gcdAction = null;
+    //        return CountDownAction(countDown);
+    //    }
+    //    IBaseAction.TargetOverride = null;
 
-        gcdAction = GCD();
-        IBaseAction.IgnoreClipping = false;
+    //    gcdAction = GCD();
+    //    IBaseAction.IgnoreClipping = false;
 
-        if (gcdAction != null)
-        {
-            if (DataCenter.NextAbilityToNextGCD < DataCenter.MinAnimationLock + DataCenter.Ping
-                || DataCenter.WeaponTotal < DataCenter.CastingTotal) return gcdAction;
+    //    if (gcdAction != null)
+    //    {
+    //        if () return gcdAction;
 
-            if (Ability(gcdAction, out var ability)) return ability;
+    //        if (Ability(gcdAction, out var ability)) return ability;
 
-            return gcdAction;
-        }
-        else
-        {
-            IBaseAction.IgnoreClipping = true;
-            if (Ability(AddlePvE, out var ability)) return ability;
-            IBaseAction.IgnoreClipping = false;
+    //        return gcdAction;
+    //    }
+    //    else
+    //    {
+    //        IBaseAction.IgnoreClipping = true;
+    //        if (Ability(AddlePvE, out var ability)) return ability;
+    //        IBaseAction.IgnoreClipping = false;
 
-            return null;
-        }
-    }
+    //        return null;
+    //    }
+    //}
 
     /// <summary>
     /// The action in countdown.

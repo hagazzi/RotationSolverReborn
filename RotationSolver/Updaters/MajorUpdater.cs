@@ -53,15 +53,15 @@ internal static class MajorUpdater
             SocialUpdater.UpdateSocial();
             PreviewUpdater.UpdatePreview();
 
-            if (Service.Config.TeachingMode && ActionUpdater.NextAction != null)
+            if (Service.Config.TeachingMode && ActionUpdater.NextOGCDAction != null)
             {
                 //Sprint action id is 3 however the id in hot bar is 4.
-                var id = ActionUpdater.NextAction.AdjustedID;
+                var id = ActionUpdater.NextOGCDAction.AdjustedID;
                 PainterManager.ActionIds.Add(id == (uint)ActionID.SprintPvE ? 4 : id);
             }
             ActionUpdater.UpdateActionInfo();
 
-            var canDoAction = ActionUpdater.CanDoAction();
+            var canDoAction = ActionUpdater.CanDoAction(out _);
             MovingUpdater.UpdateCanMove(canDoAction);
             if (canDoAction)
             {
@@ -164,7 +164,7 @@ internal static class MajorUpdater
 
         if (!IsValid)
         {
-            ActionUpdater.NextAction = ActionUpdater.NextGCDAction = null;
+            ActionUpdater.NextOGCDAction = ActionUpdater.NextGCDAction = null;
             return;
         }
 
