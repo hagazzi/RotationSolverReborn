@@ -231,7 +231,7 @@ partial class CustomRotation
     /// Ture for Manual Target, false for Auto Target.
     /// </summary>
     [Description("The state of manual. True for manual.")]
-    public static bool IsManual => DataCenter.IsManual;
+    public static bool IsManual => false;
 
     #region GCD
 

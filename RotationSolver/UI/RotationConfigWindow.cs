@@ -696,9 +696,7 @@ public partial class RotationConfigWindow : Window
 
         StateCommandType.Auto.DisplayCommandHelp(getHelp: LocalizationManager.Local);
 
-        StateCommandType.Manual.DisplayCommandHelp(getHelp: LocalizationManager.Local);
-
-        StateCommandType.Cancel.DisplayCommandHelp(getHelp: LocalizationManager.Local);
+        StateCommandType.Off.DisplayCommandHelp(getHelp: LocalizationManager.Local);
 
         OtherCommandType.NextAction.DisplayCommandHelp(getHelp: LocalizationManager.Local);
 

@@ -40,4 +40,11 @@ public enum TargetingType
     /// </summary>
     [Description("Low Max HP")]
     LowMaxHP,
+
+    /// <summary>
+    /// Stick to current target.
+    /// </summary>
+    /// 
+    [Description("Sticky")]
+    Sticky,
 }

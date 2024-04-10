@@ -99,19 +99,13 @@ public enum StateCommandType : byte
     /// 
     /// </summary>
     [Description("Stop the addon. Always remember to turn it off when it is not in use!")]
-    Cancel,
+    Off,
 
     /// <summary>
     /// 
     /// </summary>
     [Description("Start the addon in Auto mode. When out of combat or when combat starts, switches the target according to the set condition.")]
     Auto,
-
-    /// <summary>
-    /// 
-    /// </summary>
-    [Description("Start the addon in Manual mode. You need to choose the target manually. This will bypass any engage settings that you have set up and will start attacking immediately once something is targeted.")]
-    Manual,
 }
 
 /// <summary>

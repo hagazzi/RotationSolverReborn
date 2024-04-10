@@ -19,9 +19,8 @@ public static partial class RSCommands
     public static void IncrementState()
     {
         if (!DataCenter.State) { DoStateCommandType(StateCommandType.Auto); return; }
-        if (DataCenter.State && !DataCenter.IsManual && DataCenter.TargetingType == TargetingType.Big) { DoStateCommandType(StateCommandType.Auto); return; }
-        if (DataCenter.State && !DataCenter.IsManual) { DoStateCommandType(StateCommandType.Manual); return; }
-        if (DataCenter.State && DataCenter.IsManual) { DoStateCommandType(StateCommandType.Cancel); return; }
+        if (DataCenter.State && DataCenter.TargetingType == TargetingType.Big) { DoStateCommandType(StateCommandType.Auto); return; }
+        if (DataCenter.State) { DoStateCommandType(StateCommandType.Off); return; }
     }
 
     internal static unsafe bool CanDoAnAction(bool isGCD)
@@ -123,8 +122,7 @@ public static partial class RSCommands
                 if (tar != null && tar != Player.Object && tar.IsEnemy())
                 {
                     DataCenter.HostileTarget = tar;
-                    if (!DataCenter.IsManual
-                        && (Service.Config.SwitchTargetFriendly || ((Svc.Targets.Target?.IsEnemy() ?? true)
+                    if ((Service.Config.SwitchTargetFriendly || ((Svc.Targets.Target?.IsEnemy() ?? true)
                         || Svc.Targets.Target?.GetObjectKind() == Dalamud.Game.ClientState.Objects.Enums.ObjectKind.Treasure)))
                     {
                         Svc.Targets.Target = tar;
@@ -169,7 +167,7 @@ public static partial class RSCommands
     }
     internal static void CancelState()
     {
-        if (DataCenter.State) DoStateCommandType(StateCommandType.Cancel);
+        if (DataCenter.State) DoStateCommandType(StateCommandType.Off);
     }
 
     static float _lastCountdownTime = 0;
@@ -217,16 +215,16 @@ public static partial class RSCommands
             _lastCountdownTime = 0;
             CancelState();
         }
-        //Auto manual on being attacked by someone.
-        else if (Service.Config.StartOnAttackedBySomeone
-            && target != null
-            && !target.IsDummy())
-        {
-            if (!DataCenter.State)
-            {
-                DoStateCommandType(StateCommandType.Manual);
-            }
-        }
+        //Auto manual on being attacked by someone. //TODO: replace
+        //else if (Service.Config.StartOnAttackedBySomeone
+        //    && target != null
+        //    && !target.IsDummy())
+        //{
+        //    if (!DataCenter.State)
+        //    {
+        //        DoStateCommandType(StateCommandType.Manual);
+        //    }
+        //}
         //Auto start at count Down.
         else if (Service.Config.StartOnCountdown
             && Service.CountDownTime > 0)
@@ -234,10 +232,7 @@ public static partial class RSCommands
             _lastCountdownTime = Service.CountDownTime;
             if (!DataCenter.State)
             {
-                if (Service.Config.CountdownStartsManualMode)
-                    DoStateCommandType(StateCommandType.Manual);
-                else
-                    DoStateCommandType(StateCommandType.Auto);
+                DoStateCommandType(StateCommandType.Auto);
             }
         }
         //Cancel when after combat.
@@ -252,13 +247,6 @@ public static partial class RSCommands
         else if (DataCenter.RightSet.SwitchCancelConditionSet?.IsTrue(DataCenter.RightNowRotation) ?? false)
         {
             CancelState();
-        }
-        else if (DataCenter.RightSet.SwitchManualConditionSet?.IsTrue(DataCenter.RightNowRotation) ?? false)
-        {
-            if (!DataCenter.State)
-            {
-                DoStateCommandType(StateCommandType.Manual);
-            }
         }
         else if (DataCenter.RightSet.SwitchAutoConditionSet?.IsTrue(DataCenter.RightNowRotation) ?? false)
         {

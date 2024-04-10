@@ -41,10 +41,10 @@ internal class ControlWindow : CtrlWindow
 
         ImGui.Spacing();
 
-        DrawCommandAction(61751, StateCommandType.Manual, ImGuiColors.DPSRed);
+        //DrawCommandAction(61751, StateCommandType.Manual, ImGuiColors.DPSRed);
 
         ImGui.SameLine();
-        DrawCommandAction(61764, StateCommandType.Cancel, ImGuiColors.DalamudWhite2);
+        DrawCommandAction(61764, StateCommandType.Off, ImGuiColors.DalamudWhite2);
 
         ImGui.SameLine();
         columnWidth = Math.Max(columnWidth, ImGui.GetCursorPosX());
@@ -76,7 +76,7 @@ internal class ControlWindow : CtrlWindow
 
         var color = *ImGui.GetStyleColorVec4(ImGuiCol.TextDisabled);
 
-        var isAoe = Service.Config.UseAoeAction && (!DataCenter.IsManual || Service.Config.UseAoeWhenManual);
+        var isAoe = Service.Config.UseAoeAction;
 
         // Track whether the style color was pushed
         bool pushedStyleColor = false;
@@ -398,9 +398,8 @@ internal class ControlWindow : CtrlWindow
         bool isMatch = false;
         switch (command)
         {
-            case StateCommandType.Auto when DataCenter.State && !DataCenter.IsManual:
-            case StateCommandType.Manual when DataCenter.State && DataCenter.IsManual:
-            case StateCommandType.Cancel when !DataCenter.State:
+            case StateCommandType.Auto when DataCenter.State:
+            case StateCommandType.Off when !DataCenter.State:
                 isMatch = true;
                 break;
         }

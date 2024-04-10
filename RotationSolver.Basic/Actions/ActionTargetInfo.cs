@@ -45,11 +45,6 @@ public struct ActionTargetInfo(IBaseAction action)
         {
             if (!Service.Config.UseAoeAction) return true;
 
-            if (DataCenter.IsManual)
-            {
-                if (!Service.Config.UseAoeWhenManual) return true;
-            }
-
             return Service.Config.ChooseAttackMark
                 && !Service.Config.CanAttackMarkAoe
                 && MarkingHelper.HaveAttackChara;
@@ -70,8 +65,7 @@ public struct ActionTargetInfo(IBaseAction action)
             objs.Add(obj);
         }
 
-        var isAuto = !DataCenter.IsManual || IsTargetFriendly;
-        return objs.Where(b => isAuto || b.ObjectId == Svc.Targets.Target?.ObjectId)
+        return objs.Where(b => b.ObjectId == Svc.Targets.Target?.ObjectId)
             .Where(InViewTarget).Where(CanUseTo).Where(action.Setting.CanTarget);
     }
 
@@ -237,7 +231,7 @@ public struct ActionTargetInfo(IBaseAction action)
             skipAoeCheck ? 0 : action.Config.AoeCount);
         var target = FindTargetByType(targets, type, action.Config.AutoHealRatio, action.Setting.SpecialType);
         if (target == null) return null;
-        if (DataCenter.IsManual && target.IsEnemy())
+        if (DataCenter.TargetingType == TargetingType.Sticky && target.IsEnemy())
         {
             var activeTarget = Svc.Targets.Target as BattleChara;
             if (target.ObjectId != activeTarget?.ObjectId)

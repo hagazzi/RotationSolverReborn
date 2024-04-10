@@ -16,7 +16,7 @@ internal static class DataCenter
 {
     private static uint _hostileTargetId = GameObject.InvalidGameObjectId;
 
-    public static bool IsActivated() => State || IsManual || Service.Config.TeachingMode;
+    public static bool IsActivated() => State || Service.Config.TeachingMode;
     internal static BattleChara? HostileTarget
     {
         get
@@ -159,6 +159,7 @@ internal static class DataCenter
             {
                 Service.Config.TargetingTypes.Add(TargetingType.Big);
                 Service.Config.TargetingTypes.Add(TargetingType.Small);
+                Service.Config.TargetingTypes.Add(TargetingType.Sticky);
                 Service.Config.Save();
             }
 
@@ -251,8 +252,6 @@ internal static class DataCenter
     }
 
     public static bool State { get; set; } = false;
-
-    public static bool IsManual { get; set; } = false;
 
     public static bool InCombat { get; set; }
 
