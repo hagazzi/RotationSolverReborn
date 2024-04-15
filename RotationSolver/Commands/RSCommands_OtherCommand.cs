@@ -34,6 +34,26 @@ public static partial class RSCommands
             case OtherCommandType.NextAction:
                 DoAction();
                 break;
+
+            case OtherCommandType.Version:
+                PrintVersionInfo();
+                break;
+        }
+    }
+
+    private static void PrintVersionInfo()
+    {
+        var rsrVersion = typeof(RSCommands).Assembly.GetName().Version;
+        List<string> rotationVersions = new();
+        foreach (var customCombo in RotationUpdater.CustomRotations)
+        {
+            foreach (var rotation in customCombo.Rotations)
+            {
+                if (rotation is ICustomRotation customRotation)
+                {
+                    rotationVersions.Add($"{customRotation.Name} : {}");
+                }
+            }
         }
     }
 

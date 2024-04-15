@@ -144,4 +144,10 @@ public enum OtherCommandType : byte
     /// </summary>
     [Description("Do the next action")]
     NextAction,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [Description("Print the current version of the plugin and all loaded assemblies.")]
+    Version,
 }
