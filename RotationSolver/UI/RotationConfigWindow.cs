@@ -1,4 +1,5 @@
-﻿using Dalamud.Game.ClientState.Keys;
+﻿using System.Diagnostics;
+using Dalamud.Game.ClientState.Keys;
 using Dalamud.Interface.Colors;
 using Dalamud.Interface.Internal;
 using Dalamud.Interface.Utility;
@@ -10,8 +11,9 @@ using ECommons.ExcelServices;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.ImGuiMethods;
-using ExCSS;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Fate;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using FFXIVClientStructs.FFXIV.Common.Component.BGCollision;
 using Lumina.Excel.GeneratedSheets;
 using RotationSolver.Basic.Configuration;
@@ -20,10 +22,11 @@ using RotationSolver.Helpers;
 using RotationSolver.Localization;
 using RotationSolver.UI.SearchableConfigs;
 using RotationSolver.Updaters;
-using System.Diagnostics;
 using XIVPainter;
 using GAction = Lumina.Excel.GeneratedSheets.Action;
+using Status = Lumina.Excel.GeneratedSheets.Status;
 using TargetType = RotationSolver.Basic.Actions.TargetType;
+using Task = System.Threading.Tasks.Task;
 
 namespace RotationSolver.UI;
 
@@ -61,51 +64,33 @@ public partial class RotationConfigWindow : Window
         using var style = ImRaii.PushStyle(ImGuiStyleVar.SelectableTextAlign, new Vector2(0.5f, 0.5f));
         try
         {
-            var leftTop = ImGui.GetWindowPos() + ImGui.GetCursorPos();
-            var rightDown = leftTop + ImGui.GetWindowSize();
-            var screenSize = ImGuiHelpers.MainViewport.Size;
-            if ((leftTop.X <= 0 || leftTop.Y <= 0 || rightDown.X >= screenSize.X || rightDown.Y >= screenSize.Y)
-                && !ImGui.GetIO().ConfigFlags.HasFlag(ImGuiConfigFlags.ViewportsEnable))
+            using var table = ImRaii.Table("Rotation Config Table", 2, ImGuiTableFlags.Resizable);
+            if (table)
             {
-                var str = string.Empty;
-                for (int i = 0; i < 150; i++)
+                ImGui.TableSetupColumn("Rotation Config Side Bar", ImGuiTableColumnFlags.WidthFixed, 100 * Scale);
+                ImGui.TableNextColumn();
+
+                try
                 {
-                    str += "Move away! Don't crash! ";
+                    DrawSideBar();
+                }
+                catch (Exception ex)
+                {
+                    Svc.Log.Warning(ex, "Something wrong with sideBar");
                 }
 
-                using var font = ImRaii.PushFont(DrawingExtensions.GetFont(24));
-                using var color = ImRaii.PushColor(ImGuiCol.Text, ImGui.ColorConvertFloat4ToU32(ImGuiColors.DalamudYellow));
-                ImGui.TextWrapped(str);
-            }
-            else
-            {
-                using var table = ImRaii.Table("Rotation Config Table", 2, ImGuiTableFlags.Resizable);
-                if (table)
+                ImGui.TableNextColumn();
+
+                try
                 {
-                    ImGui.TableSetupColumn("Rotation Config Side Bar", ImGuiTableColumnFlags.WidthFixed, 100 * Scale);
-                    ImGui.TableNextColumn();
-
-                    try
-                    {
-                        DrawSideBar();
-                    }
-                    catch (Exception ex)
-                    {
-                        Svc.Log.Warning(ex, "Something wrong with sideBar");
-                    }
-
-                    ImGui.TableNextColumn();
-
-                    try
-                    {
-                        DrawBody();
-                    }
-                    catch (Exception ex)
-                    {
-                        Svc.Log.Warning(ex, "Something wrong with body");
-                    }
+                    DrawBody();
+                }
+                catch (Exception ex)
+                {
+                    Svc.Log.Warning(ex, "Something wrong with body");
                 }
             }
+
         }
         catch (Exception ex)
         {
@@ -1210,20 +1195,13 @@ public partial class RotationConfigWindow : Window
 
             if (config is RotationConfigCombo c)
             {
-                var val = int.Parse(c.Value);
-                ImGui.SetNextItemWidth(ImGui.CalcTextSize(c.Items[val]).X + 50 * Scale);
-                var openCombo = ImGui.BeginCombo(name, c.Items[val]);
-                ImGuiHelper.ReactPopup(key, command, Reset);
-                if (openCombo)
+                var names = c.DisplayValues;
+                var selectedValue = c.selectedIdx;
+                
+                ImGui.SetNextItemWidth(ImGui.CalcTextSize(c.DisplayValues.OrderByDescending(v => v.Length).First()).X + 50 * Scale);
+                if (ImGui.Combo(name, ref selectedValue, names, names.Length))
                 {
-                    for (int comboIndex = 0; comboIndex < c.Items.Length; comboIndex++)
-                    {
-                        if (ImGui.Selectable(c.Items[comboIndex]))
-                        {
-                            config.Value = comboIndex.ToString();
-                        }
-                    }
-                    ImGui.EndCombo();
+                    c.selectedIdx = selectedValue;
                 }
             }
             else if (config is RotationConfigBoolean b)
@@ -1556,8 +1534,8 @@ public partial class RotationConfigWindow : Window
                     ImGui.Text("ID: " + action.Info.ID.ToString());
 #if DEBUG
                     ImGui.Text("Is Real GCD: " + action.Info.IsRealGCD.ToString());
-                    ImGui.Text("Resources: " + FFXIVClientStructs.FFXIV.Client.Game.ActionManager.Instance()->CheckActionResources(FFXIVClientStructs.FFXIV.Client.Game.ActionType.Action, action.AdjustedID).ToString());
-                    ImGui.Text("Status: " + FFXIVClientStructs.FFXIV.Client.Game.ActionManager.Instance()->GetActionStatus(FFXIVClientStructs.FFXIV.Client.Game.ActionType.Action, action.AdjustedID).ToString());
+                    ImGui.Text("Resources: " + ActionManager.Instance()->CheckActionResources(ActionType.Action, action.AdjustedID).ToString());
+                    ImGui.Text("Status: " + ActionManager.Instance()->GetActionStatus(ActionType.Action, action.AdjustedID).ToString());
                     ImGui.Text("Cast Time: " + action.Info.CastTime.ToString());
                     ImGui.Text("MP: " + action.Info.MPNeed.ToString());
 #endif
@@ -1581,9 +1559,9 @@ public partial class RotationConfigWindow : Window
             {
                 try
                 {
-                    ImGui.Text("Status: " + FFXIVClientStructs.FFXIV.Client.Game.ActionManager.Instance()->GetActionStatus(FFXIVClientStructs.FFXIV.Client.Game.ActionType.Item, item.ID).ToString());
-                    ImGui.Text("Status HQ: " + FFXIVClientStructs.FFXIV.Client.Game.ActionManager.Instance()->GetActionStatus(FFXIVClientStructs.FFXIV.Client.Game.ActionType.Item, item.ID + 1000000).ToString());
-                    var remain = FFXIVClientStructs.FFXIV.Client.Game.ActionManager.Instance()->GetRecastTime(FFXIVClientStructs.FFXIV.Client.Game.ActionType.Item, item.ID) - FFXIVClientStructs.FFXIV.Client.Game.ActionManager.Instance()->GetRecastTimeElapsed(FFXIVClientStructs.FFXIV.Client.Game.ActionType.Item, item.ID);
+                    ImGui.Text("Status: " + ActionManager.Instance()->GetActionStatus(ActionType.Item, item.ID).ToString());
+                    ImGui.Text("Status HQ: " + ActionManager.Instance()->GetActionStatus(ActionType.Item, item.ID + 1000000).ToString());
+                    var remain = ActionManager.Instance()->GetRecastTime(ActionType.Item, item.ID) - ActionManager.Instance()->GetRecastTimeElapsed(ActionType.Item, item.ID);
                     ImGui.Text("remain: " + remain.ToString());
                     ImGui.Text("CanUse: " + item.CanUse(out _, true).ToString());
 
@@ -2395,7 +2373,7 @@ public partial class RotationConfigWindow : Window
                     =
                     [
                         .. pts,
-                        FFXIVClientStructs.FFXIV.Client.System.Framework.Framework.Instance()->BGCollisionModule
+                        Framework.Instance()->BGCollisionModule
                             ->RaycastEx(&hit, point + Vector3.UnitY * 5, -Vector3.UnitY, 20, 1, unknown) ? hit.Point : point,
                     ];
                     OtherConfiguration.SaveBeneficialPositions();
