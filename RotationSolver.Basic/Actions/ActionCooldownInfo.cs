@@ -178,6 +178,7 @@ public readonly struct ActionCooldownInfo : ICooldown
     public bool CanUseGCD()
     {
         var maxAhead = Service.Config.OverrideActionAheadTimer ? Service.Config.Action4Head : 0.4;
+        if (maxAhead < 0.2f || maxAhead > 0.6f) WarningHelper.AddSystemWarning($"Your Action Ahead value of {maxAhead} is outside the normal range of 0.2-0.6. You may experience clipping and/or missed weaves.");
         if (_action.Config.ActionAheadTime.HasValue) maxAhead = _action.Config.ActionAheadTime.Value;
 
         //GCD
