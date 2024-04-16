@@ -128,16 +128,28 @@ partial class NinjaRotation
     static partial void ModifyTenPvE(ref ActionSetting setting)
     {
         setting.UnlockedByQuestID = 65748;
+        setting.CreateConfig = () => new()
+        {
+            ActionAheadTime = 0.1f,
+        };
     }
 
     static partial void ModifyChiPvE(ref ActionSetting setting)
     {
         setting.UnlockedByQuestID = 65750;
+        setting.CreateConfig = () => new()
+        {
+            ActionAheadTime = 0.1f,
+        };
     }
 
     static partial void ModifyJinPvE(ref ActionSetting setting)
     {
         setting.UnlockedByQuestID = 65768;
+        setting.CreateConfig = () => new()
+        {
+            ActionAheadTime = 0.1f,
+        };
     }
 
     static partial void ModifyHakkeMujinsatsuPvE(ref ActionSetting setting)

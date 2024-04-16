@@ -55,4 +55,9 @@ public class ActionConfig()
     /// Is this action should be a mistake action.
     /// </summary>
     public bool IsInMistake { get; set; }
+
+    /// <summary>
+    /// The time before GCD cooldown is up that this action should try to be queued.
+    /// </summary>
+    public float? ActionAheadTime { get; set; } = null;
 }

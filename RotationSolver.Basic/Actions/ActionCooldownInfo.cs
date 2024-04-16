@@ -170,4 +170,32 @@ public readonly struct ActionCooldownInfo : ICooldown
         }
         return true;
     }
+
+    /// <summary>
+    /// Whether or not it's time for GCD action
+    /// </summary>
+    /// <returns></returns>
+    public bool CanUseGCD()
+    {
+        var maxAhead = Service.Config.OverrideActionAheadTimer ? Service.Config.Action4Head : 0.4;
+        if (_action.Config.ActionAheadTime.HasValue) maxAhead = _action.Config.ActionAheadTime.Value;
+
+        //GCD
+        var canUseGCD = DataCenter.WeaponRemain <= maxAhead;
+        return canUseGCD;
+    }
+
+    /// <summary>
+    /// Whether or not it's time for oGCD action
+    /// </summary>
+    /// <returns></returns>
+    public bool CanUseOGCD()
+    {
+        var maxAhead = Service.Config.OverrideActionAheadTimer ? Service.Config.Action4Head : Math.Max(DataCenter.Ping, 0.08f);
+        if (_action.Config.ActionAheadTime.HasValue) maxAhead = _action.Config.ActionAheadTime.Value;
+
+        //OGCD
+        var canUseOGCD = ActionManagerHelper.GetCurrentAnimationLock() <= maxAhead;
+        return canUseOGCD;
+    }
 }

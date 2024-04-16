@@ -170,7 +170,7 @@ partial class CustomRotation
 
         if (gcdAction != null)
         {
-            if (ActionHelper.CanUseGCD) return gcdAction;
+            if (gcdAction.Cooldown.CanUseGCD()) return gcdAction;
 
             if (Ability(gcdAction, out var ability)) return ability;
 

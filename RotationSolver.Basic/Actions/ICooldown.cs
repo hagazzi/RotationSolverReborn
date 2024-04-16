@@ -22,4 +22,8 @@ public interface ICooldown
     /// The current charges.
     /// </summary>
     ushort CurrentCharges { get; }
+
+    bool CanUseGCD();
+
+    bool CanUseOGCD();
 }

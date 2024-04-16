@@ -282,7 +282,7 @@ internal static class ActionUpdater
 
 
         //GCD
-        var canUseGCD = ActionHelper.CanUseGCD;
+        var canUseGCD = NextGCDAction?.Cooldown.CanUseGCD() ?? false;
         if (_GCDDelay.Delay(canUseGCD))
         {
             return RSCommands.CanDoAnAction(true);
@@ -296,7 +296,7 @@ internal static class ActionUpdater
         if (DataCenter.WeaponElapsed <= DataCenter.CastingTotal) return false;
 
         //The last one.
-        if (ActionHelper.CanUseOGCD)
+        if (NextAction?.Cooldown.CanUseOGCD() ?? false)
         {
             return RSCommands.CanDoAnAction(false);
         }

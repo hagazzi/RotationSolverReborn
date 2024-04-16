@@ -203,7 +203,7 @@ public readonly struct ActionBasicInfo
         }
 
         //Need casting.
-        if (CastTime > 0 && !player.HasStatus(true, 
+        if (CastTime > 0 && !player.HasStatus(true,
             [
                 StatusID.Swiftcast,
                 StatusID.Triplecast,
@@ -212,7 +212,7 @@ public readonly struct ActionBasicInfo
             && !ActionsNoNeedCasting.Contains(ID))
         {
             //No casting.
-            if(DataCenter.SpecialType == SpecialCommandType.NoCasting) return false;
+            if (DataCenter.SpecialType == SpecialCommandType.NoCasting) return false;
 
             //Is knocking back.
             if (DateTime.Now > DataCenter.KnockbackStart && DateTime.Now < DataCenter.KnockbackFinished) return false;

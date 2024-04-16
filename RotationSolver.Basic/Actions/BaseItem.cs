@@ -20,6 +20,24 @@ public class BaseItem : IBaseItem
         ushort ICooldown.MaxCharges => 0;
 
         ushort ICooldown.CurrentCharges => 0;
+
+        public bool CanUseGCD()
+        {
+            var maxAhead = Service.Config.OverrideActionAheadTimer ? Service.Config.Action4Head : 0.4;
+
+            //GCD
+            var canUseGCD = DataCenter.WeaponRemain <= maxAhead;
+            return canUseGCD;
+        }
+
+        public bool CanUseOGCD()
+        {
+            var maxAhead = Service.Config.OverrideActionAheadTimer ? Service.Config.Action4Head : Math.Max(DataCenter.Ping, 0.08f);
+
+            //OGCD
+            var canUseOGCD = ActionManagerHelper.GetCurrentAnimationLock() <= maxAhead;
+            return canUseOGCD;
+        }
     }
 
     private protected readonly Item _item;

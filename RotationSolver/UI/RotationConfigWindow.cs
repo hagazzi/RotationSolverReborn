@@ -1520,6 +1520,18 @@ public partial class RotationConfigWindow : Window
                     }
                 }
 
+                if (config.ActionAheadTime.HasValue)
+                {
+                    var aheadTime = config.ActionAheadTime.Value;
+                    ImGui.SetNextItemWidth(Scale * 150);
+                    if (ImGui.DragFloat($"{UiString.ConfigWindow_Actions_AheadTime.Local()}##{a}",
+                                               ref aheadTime, 0.1f, 0, 120, $"{aheadTime:F2}{ConfigUnitType.Seconds.ToSymbol()}"))
+                    {
+                        config.ActionAheadTime = aheadTime;
+                    }
+                    ImguiTooltips.HoveredTooltip(ConfigUnitType.Seconds.Local());
+                }
+
                 var ratio = config.AutoHealRatio;
                 ImGui.SetNextItemWidth(Scale * 150);
                 if (ImGui.DragFloat($"{UiString.ConfigWindow_Actions_HealRatio.Local()}##{a}",
