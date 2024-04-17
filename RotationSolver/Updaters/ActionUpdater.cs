@@ -93,24 +93,6 @@ internal static class ActionUpdater
             if (localPlayer != null && customRotation != null
                 && customRotation.TryInvoke(out var newAction, out var gcdAction))
             {
-                if (Service.Config.MistakeRatio > 0)
-                {
-                    var actions = customRotation.AllActions.Where(a =>
-                    {
-                        if (a.ID == newAction?.ID) return false;
-                        if (a is IBaseAction action)
-                        {
-                            return !action.Setting.IsFriendly && action.Config.IsInMistake
-                            && action.Setting.TargetType != TargetType.Move
-                            && action.CanUse(out _, usedUp: true, skipStatusProvideCheck: true, skipClippingCheck: true, skipAoeCheck: true);
-                        }
-                        return false;
-                    });
-
-                    var count = actions.Count();
-                    WrongAction = count > 0 ? actions.ElementAt(_wrongRandom.Next(count)) : null;
-                }
-
                 NextAction = newAction;
 
                 if (gcdAction is IBaseAction GcdAction)
@@ -283,7 +265,7 @@ internal static class ActionUpdater
 
 
         //GCD
-        var canUseGCD = NextGCDAction?.Cooldown.CanUseGCD() ?? false;
+        var canUseGCD = NextGCDAction?.Cooldown.CanUseGCD() ?? true;
         if (_GCDDelay.Delay(canUseGCD))
         {
             return RSCommands.CanDoAnAction(true);
