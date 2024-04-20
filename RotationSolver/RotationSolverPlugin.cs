@@ -102,13 +102,6 @@ public sealed class RotationSolverPlugin : IDalamudPlugin, IDisposable
             await DownloadHelper.DownloadAsync();
             await RotationUpdater.GetAllCustomRotationsAsync(DownloadOption.Download);
         });
-
-#if DEBUG
-        if (Player.Available)
-        {
-            //_ = XIVPainterMain.ShowOff();
-        }
-#endif
     }
 
     private void OnDraw()

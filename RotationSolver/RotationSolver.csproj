@@ -41,6 +41,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
+		<ProjectReference Include="..\RotationSolver.BasicRotations\RotationSolver.BasicRotations.csproj" />
 		<ProjectReference Include="..\RotationSolver.Basic\RotationSolver.Basic.csproj" />
 		<ProjectReference Include="..\XIVPainter\XIVPainter\XIVPainter.csproj" />
 		

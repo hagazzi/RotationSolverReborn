@@ -32,11 +32,8 @@ internal partial class Configs : IPluginConfiguration
 
     public List<ActionEventInfo> Events { get; private set; } = [];
     public SortedSet<Job> DisabledJobs { get; private set; } = [];
-
-    public string[] OtherLibs { get; set; } = [];
-
-    public string[] GitHubLibs { get; set; } = [];
     public List<TargetingType> TargetingTypes { get; set; } = [];
+    public string[] OtherLibs { get; set; } = [];
 
     public MacroInfo DutyStart { get; set; } = new MacroInfo();
     public MacroInfo DutyEnd { get; set; } = new MacroInfo();
@@ -89,9 +86,15 @@ internal partial class Configs : IPluginConfiguration
         Filter = AutoActionCondition, Section =1)]
     private static readonly bool _healOutOfCombat = false;
 
+
     [ConditionBool, UI("Display plugin status on toast popup",
         Filter =UiInformation)]
     private static readonly bool _showInfoOnToast = false;
+
+    [ConditionBool, UI("Allow the use of custom rotations. (WARNING! DANGEROUS!)",
+               Description = "This will allow RSR to load custom rotations from a specified folder or URL.\n\nUSE EXTREME CAUTION WHEN LOADING CUSTOM ROTATIONS. THEY CAN BE POTENTIALLY MALICIOUS\n\nOnly load custom rotations from people you trust\n\nThe Combat reborn team takes no responsibility for any custom rotations you might load",
+               Filter = Rotations)]
+    private static readonly bool _useCustomRotations = false;
 
     [ConditionBool, UI("Lock the movement when casting or when doing some actions.", Filter = Extra)]
     private static readonly bool _poslockCasting = false;
@@ -256,12 +259,6 @@ internal partial class Configs : IPluginConfiguration
     private static readonly bool _inDebug = false;
     public bool AutoUpdateLibs { get; set; } = false;
 
-    [ConditionBool, UI("Auto Download Rotations", Filter = Rotations)]
-    private static readonly bool _downloadRotations = true;
-
-    [ConditionBool, UI("Auto Update Rotations", Parent = nameof(DownloadRotations))]
-    private static readonly bool _autoUpdateRotations = true;
-
     [ConditionBool, UI("Make /rotation Manual as a toggle command.",
         Filter = BasicParams)]
     private static readonly bool _toggleManual = false;
@@ -309,10 +306,6 @@ internal partial class Configs : IPluginConfiguration
     [ConditionBool, UI("Show tooltips",
         Filter = UiInformation)]
     private static readonly bool _showTooltips = true;
-
-    [ConditionBool, UI("Auto load rotations",
-        Filter = Rotations)]
-    private static readonly bool _autoLoadCustomRotations = true;
 
     [ConditionBool, UI("Target Fate priority",
         Filter = TargetConfig, Section = 1)]

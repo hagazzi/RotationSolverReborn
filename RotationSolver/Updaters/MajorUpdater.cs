@@ -204,12 +204,12 @@ internal static class MajorUpdater
         {
             StateUpdater.UpdateState();
 
-            if (Service.Config.AutoLoadCustomRotations)
+            if (Service.Config.UseCustomRotations)
             {
                 RotationUpdater.LocalRotationWatcher();
             }
-
             RotationUpdater.UpdateRotation();
+
             if (DataCenter.IsActivated())
             {
                 TargetUpdater.UpdateTarget();

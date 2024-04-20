@@ -156,8 +156,8 @@ internal enum UiString
     [Description("Conditions for automatic use of action being disabled.")]
     ConfigWindow_Actions_DisabledConditionSet_Description,
 
-    [Description("Download Rotations")]
-    ConfigWindow_Rotations_Download,
+    [Description("Load Custom Rotations")]
+    ConfigWindow_Rotations_Load,
 
     [Description("Links of the rotations online")]
     ConfigWindow_Rotations_Links,
