@@ -50,11 +50,6 @@ partial class CustomRotation : ICustomRotation
     /// <inheritdoc/>
     public uint IconID { get; }
 
-    private readonly IRotationConfigSet _configs;
-
-    /// <inheritdoc/>
-    IRotationConfigSet ICustomRotation.Configs => _configs;
-
     /// <inheritdoc/>
     public static Vector3? MoveTarget { get; internal set; }
 
@@ -132,7 +127,6 @@ partial class CustomRotation : ICustomRotation
     private protected CustomRotation()
     {
         IconID = IconSet.GetJobIcon(this.Job);
-        _configs = new RotationConfigSet(this);
     }
 
     /// <inheritdoc/>

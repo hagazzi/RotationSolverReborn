@@ -1,14 +1,6 @@
 ﻿namespace RotationSolver.Basic.Configuration.RotationConfig;
 
-internal class RotationConfigString(ICustomRotation rotation, PropertyInfo property)
-    : RotationConfigBase(rotation, property)
+internal class RotationConfigString(string name, object defaultValue, CombatType combatType = CombatType.None)
+    : RotationConfigBase(name, defaultValue, combatType)
 {
-    public override bool DoCommand(IRotationConfigSet set, string str)
-    {
-        if (!base.DoCommand(set, str)) return false;
-
-        Value = str[Name.Length..].Trim();
-
-        return true;
-    }
 }

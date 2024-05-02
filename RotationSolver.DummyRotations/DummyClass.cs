@@ -1,20 +1,30 @@
 ﻿using ImGuiNET;
 using RotationSolver.Basic.Actions;
 using RotationSolver.Basic.Attributes;
+using RotationSolver.Basic.Configuration.RotationConfig;
 using RotationSolver.Basic.Data;
 using RotationSolver.Basic.Rotations.Basic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace RotationSolver.DummyRotations
 {
-    [Rotation("Dummy Rotation", CombatType.PvP, GameVersion = "6.58")]
+    [Rotation("Dummy Rotation", CombatType.PvE, GameVersion = "6.58")]
     [Api(1)]
     public class DummyClass : MachinistRotation
     {
+        public enum Order123Enum
+        {
+            Order1,
+            Order2,
+            Order3
+        }
+        public RotationConfigBoolean UseTactician { get; set; } = new RotationConfigBoolean("Use Tactician", true, CombatType.PvE);
+        public RotationConfigCombo Order123 { get; set; } = new RotationConfigCombo("Order 1-2-3", Order123Enum.Order1, CombatType.PvE);
         protected override bool GeneralGCD(out IAction? act)
         {
             return base.GeneralGCD(out act);
@@ -22,12 +32,7 @@ namespace RotationSolver.DummyRotations
 
         protected override bool GeneralAbility(IAction nextGCD, out IAction? act)
         {
-            act = null;
-            if (BishopAutoturretPvP.CanUse(out act))
-            {
-                return true;
-            }
-            return false;
+            return base.GeneralAbility(nextGCD, out act);
         }
 
         protected override IAction? CountDownAction(float remainTime)
@@ -47,9 +52,8 @@ namespace RotationSolver.DummyRotations
 
         public override void DisplayStatus()
         {
-            ImGui.Text("Dummy Rotation");
-            ImGui.Text($"Target: {BishopAutoturretPvP.Target.Position?.X}/{BishopAutoturretPvP.Target.Position?.Y}");
-            ImGui.Text($"Bishop Autoturrent CanUse: {BishopAutoturretPvP.CanUse(out _)}");
+            ImGui.Text($"Use Tactician: {UseTactician}");
+            ImGui.Text($"Order 1-2-3: {Order123}");
         }
     }
 }

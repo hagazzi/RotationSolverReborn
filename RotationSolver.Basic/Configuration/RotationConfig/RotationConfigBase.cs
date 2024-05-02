@@ -2,7 +2,7 @@
 
 namespace RotationSolver.Basic.Configuration.RotationConfig;
 
-internal abstract class RotationConfigBase
+public abstract class RotationConfigBase
     : IRotationConfig
 {
     readonly PropertyInfo _property;
@@ -26,24 +26,12 @@ internal abstract class RotationConfigBase
         }
     }
 
-    protected RotationConfigBase(ICustomRotation rotation, PropertyInfo property)
+    protected RotationConfigBase(string name, object defaultValue, CombatType combatType = CombatType.None)
     {
-        _property = property;
-        _rotation = rotation;
-
-        Name = property.Name;
-        DefaultValue = property.GetValue(rotation)?.ToString() ?? string.Empty;
-        var attr = property.GetCustomAttribute<RotationConfigAttribute>();
-        if (attr != null)
-        {
-            DisplayName = attr.Name;
-            Type = attr.Type;
-        }
-        else
-        {
-            DisplayName = Name;
-            Type = CombatType.None;
-        }
+        Name = name;
+        DefaultValue = defaultValue.ToString();
+        DisplayName = name;
+        Type = combatType;
 
         //Set Up
         if (Service.Config.RotationConfigurations.TryGetValue(Name, out var value))
@@ -81,8 +69,6 @@ internal abstract class RotationConfigBase
 
         return Convert.ChangeType(value, type);
     }
-
-    public virtual bool DoCommand(IRotationConfigSet set, string str) => str.StartsWith(Name);
 
     public override string ToString() => Value;
 }

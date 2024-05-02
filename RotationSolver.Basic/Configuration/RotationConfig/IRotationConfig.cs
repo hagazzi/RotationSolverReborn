@@ -31,12 +31,4 @@ public interface IRotationConfig
     /// The value.
     /// </summary>
     string Value { get; set; }
-
-    /// <summary>
-    /// Happened when it is on the command.
-    /// </summary>
-    /// <param name="set"></param>
-    /// <param name="str"></param>
-    /// <returns></returns>
-    bool DoCommand(IRotationConfigSet set, string str);
 }

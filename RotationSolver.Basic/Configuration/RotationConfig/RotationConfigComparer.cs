@@ -2,7 +2,7 @@
 
 namespace RotationSolver.Basic.Configuration.RotationConfig;
 
-internal class RotationConfigComparer : IEqualityComparer<IRotationConfig>
+public class RotationConfigComparer : IEqualityComparer<IRotationConfig>
 {
     public bool Equals(IRotationConfig? x, IRotationConfig? y)
     {

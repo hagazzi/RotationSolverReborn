@@ -2,16 +2,15 @@
 
 namespace RotationSolver.Basic.Configuration.RotationConfig;
 
-internal class RotationConfigCombo: RotationConfigBase
+public class RotationConfigCombo: RotationConfigBase
 {
     public string[] DisplayValues { get; }
-    public int selectedIdx { get; set; }
 
-    public RotationConfigCombo(ICustomRotation rotation, PropertyInfo property)
-        :base(rotation, property)
+    public RotationConfigCombo(string name, object defaultValue, CombatType combatType = CombatType.None)
+        :base(name, defaultValue, combatType)
     {
         var names = new List<string>();
-        foreach (Enum v in Enum.GetValues(property.PropertyType))
+        foreach (Enum v in Enum.GetValues(defaultValue.GetType()))
         {
             names.Add(v.GetAttribute<DescriptionAttribute>()?.Description ?? v.ToString());
         }
@@ -24,32 +23,5 @@ internal class RotationConfigCombo: RotationConfigBase
         var indexStr = base.ToString();
         if (!int.TryParse(indexStr, out var index)) return DisplayValues[0].ToString();
         return DisplayValues[index];
-    }
-
-    public override bool DoCommand(IRotationConfigSet set, string str)
-    {
-        if (!base.DoCommand(set, str)) return false;
-
-        string numStr = str[Name.Length..].Trim();
-        var length = DisplayValues.Length;
-
-        int nextId = (int.Parse(Value) + 1) % length;
-        if (int.TryParse(numStr, out int num))
-        {
-            nextId = num % length;
-        }
-        else
-        {
-            for (int i = 0; i < length; i++)
-            {
-                if (DisplayValues[i] == str)
-                {
-                    nextId = i;
-                }
-            }
-        }
-
-        Value = nextId.ToString();
-        return true;
     }
 }

@@ -16,7 +16,7 @@ public static partial class RSCommands
                 var customCombo = DataCenter.RightNowRotation;
                 if (customCombo == null) return;
 
-                DoRotationCommand(customCombo, str);
+                //DoRotationCommand(customCombo, str);
                 break;
 
             case OtherCommandType.DoActions:
@@ -156,20 +156,20 @@ public static partial class RSCommands
     }
 
 
-    private static void DoRotationCommand(ICustomRotation customCombo, string str)
-    {
-        var configs = customCombo.Configs;
-        foreach (var config in configs)
-        {
-            if (config.DoCommand(configs, str))
-            {
-                Svc.Chat.Print(string.Format(UiString.CommandsChangeSettingsValue.Local(),
-                    config.DisplayName, config.Value));
+    //private static void DoRotationCommand(ICustomRotation customCombo, string str)
+    //{
+    //    var configs = customCombo.Configs;
+    //    foreach (var config in configs)
+    //    {
+    //        if (config.DoCommand(configs, str))
+    //        {
+    //            Svc.Chat.Print(string.Format(UiString.CommandsChangeSettingsValue.Local(),
+    //                config.DisplayName, config.Value));
 
-                return;
-            }
-        }
+    //            return;
+    //        }
+    //    }
 
-        Svc.Chat.PrintError(UiString.CommandsInsertActionFailure.Local());
-    }
+    //    Svc.Chat.PrintError(UiString.CommandsInsertActionFailure.Local());
+    //}
 }

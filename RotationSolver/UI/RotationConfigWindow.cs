@@ -1183,12 +1183,15 @@ public partial class RotationConfigWindow : Window
         }
         if (!enable) return;
 
-        var set = rotation.Configs;
+        var set = rotation.GetType().GetProperties()
+            .Where(prop => typeof(RotationConfigBase).IsAssignableFrom(prop.PropertyType));
 
         if (set.Any()) ImGui.Separator();
 
-        foreach (var config in set.Configs)
+        foreach (var configProp in set)
         {
+            var config = configProp.GetValue(rotation) as RotationConfigBase;
+            if (config == null) continue;
             if (DataCenter.IsPvP)
             {
                 if (!config.Type.HasFlag(CombatType.PvP)) continue;
@@ -1208,12 +1211,12 @@ public partial class RotationConfigWindow : Window
             if (config is RotationConfigCombo c)
             {
                 var names = c.DisplayValues;
-                var selectedValue = c.selectedIdx;
+                var selectedValue = int.Parse(c.Value);
                 
                 ImGui.SetNextItemWidth(ImGui.CalcTextSize(c.DisplayValues.OrderByDescending(v => v.Length).First()).X + 50 * Scale);
                 if (ImGui.Combo(name, ref selectedValue, names, names.Length))
                 {
-                    c.selectedIdx = selectedValue;
+                    c.Value = selectedValue.ToString();
                 }
             }
             else if (config is RotationConfigBoolean b)

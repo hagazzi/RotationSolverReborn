@@ -1,41 +1,16 @@
 ﻿namespace RotationSolver.Basic.Configuration.RotationConfig;
 
-internal class RotationConfigFloat : RotationConfigBase
+public class RotationConfigFloat : RotationConfigBase
 {
     public float Min, Max, Speed;
 
     public ConfigUnitType UnitType { get; set; }
 
-    public RotationConfigFloat(ICustomRotation rotation, PropertyInfo property)
-        : base(rotation, property)
+    public RotationConfigFloat(string name, object defaultValue, CombatType combatType = CombatType.None, float minimum = 0.0f, float maximum = 1.0f, float speed = 0.02f)
+        : base(name, defaultValue, combatType)
     {
-        var attr = property.GetCustomAttribute<RangeAttribute>();
-        if(attr != null)
-        {
-            Min = attr.MinValue;
-            Max = attr.MaxValue;
-            Speed = attr.Speed;
-            UnitType = attr.UnitType;
-        }
-        else
-        {
-            Min = 0.0f;
-            Max = 1.0f;
-            Speed = 0.005f;
-            UnitType = ConfigUnitType.Percent;
-        }
-    }
-
-    public override bool DoCommand(IRotationConfigSet set, string str)
-    {
-        if (!base.DoCommand(set, str)) return false;
-
-        string numStr = str[Name.Length..].Trim();
-
-        if (float.TryParse(numStr, out _))
-        {
-            Value = numStr.ToString();
-        }
-        return true;
+        Min = minimum;
+        Max = maximum;
+        Speed = speed;
     }
 }
