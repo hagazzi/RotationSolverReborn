@@ -24,30 +24,11 @@ public static partial class RSCommands
         if (DataCenter.State && DataCenter.IsManual) { DoStateCommandType(StateCommandType.Off); return; }
     }
 
-    internal static unsafe bool CanDoAnAction(bool isGCD)
-    {
-        if (!_lastState || !DataCenter.State)
-        {
-            _lastState = DataCenter.State;
-            return false;
-        }
-        _lastState = DataCenter.State;
-
-        if (!Player.Available) return false;
-
-        //Do not click the button in random time.
-        if (DateTime.Now - _lastClickTime < TimeSpan.FromMilliseconds(new Random().Next(
-            (int)(Service.Config.ClickingDelay.X * 1000), (int)(Service.Config.ClickingDelay.Y * 1000)))) return false;
-        _lastClickTime = DateTime.Now;
-
-        if (!isGCD && ActionUpdater.NextAction is IBaseAction act1 && act1.Info.IsRealGCD) return false;
-
-        return true;
-    }
     internal static DateTime _lastUsedTime = DateTime.MinValue;
     internal static uint _lastActionID;
     public static void DoAction()
     {
+
         var statusTimes = Player.Object.StatusTimes(false, [.. OtherConfiguration.NoCastingStatus.Select(i => (StatusID)i)]);
 
         if (statusTimes.Any() && statusTimes.Min() > Player.Object.TotalCastTime - Player.Object.CurrentCastTime && statusTimes.Min() < 5)
@@ -55,31 +36,8 @@ public static partial class RSCommands
             return;
         }
 
-        var wrong = new Random().NextDouble() < Service.Config.MistakeRatio && ActionUpdater.WrongAction != null;
-        var nextAction = wrong ? ActionUpdater.WrongAction : ActionUpdater.NextAction;
+        var nextAction = ActionUpdater.NextAction;
         if (nextAction == null) return;
-
-        if (wrong)
-        {
-            Svc.Toasts.ShowError(string.Format(UiString.ClickingMistakeMessage.Local(), nextAction));
-            ControlWindow.Wrong = nextAction;
-            ControlWindow.DidTime = DateTime.Now;
-        }
-
-        if (nextAction is BaseAction act1 && act1.Info.IsPvP && !act1.Setting.IsFriendly
-            && act1.TargetInfo.IsSingleTarget
-            && act1.Target.Target is PlayerCharacter p && p != Player.Object)
-        {
-            var hash = p.EncryptString();
-
-            //Don't attack authors and contributors!!
-            if ((DataCenter.AuthorHashes.ContainsKey(hash)
-                || DataCenter.ContributorsHash.Contains(hash)))
-            {
-                Svc.Chat.PrintError($"Please don't attack RS developers with RS by {act1}!");
-                return;
-            }
-        }
 
 #if DEBUG
         //if (nextAction is BaseAction acti)

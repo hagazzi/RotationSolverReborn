@@ -15,19 +15,28 @@ internal static class ActionUpdater
 
     static RandomDelay _GCDDelay = new(() => Service.Config.WeaponDelay);
 
-    internal static IAction? NextAction { get; set; }
+    internal static IAction? NextOGCDAction { get; set; }
 
     private static StaticVfx? circle, sector, rectangle;
-    private static IBaseAction? _nextGCDAction;
+    private static IAction? _nextGCDAction;
     const float gcdHeight = 5;
-    internal static IBaseAction? NextGCDAction 
+    internal static IAction? NextGCDAction
     {
         get => _nextGCDAction;
         set
         {
-            UpdateOmen(value);
+            UpdateOmen(value as IBaseAction);
             if (_nextGCDAction == value) return;
             _nextGCDAction = value;
+        }
+    }
+
+    internal static IAction? NextAction
+    {
+        get
+        {
+            if (ActionHelper.CanUseGCD) return NextGCDAction;
+            return NextOGCDAction;
         }
     }
 
@@ -45,6 +54,8 @@ internal static class ActionUpdater
 
         if (!Service.Config.ShowTarget) return;
         if (value == null) return;
+
+        
 
         var target = value.Target.Target ?? player;
 
@@ -74,13 +85,10 @@ internal static class ActionUpdater
         }
     }
 
-    internal static IAction? WrongAction { get; set; }
-    static readonly Random _wrongRandom = new();
-
     internal static void ClearNextAction()
     {
         SetAction(0);
-        WrongAction = NextAction = NextGCDAction = null;
+        NextOGCDAction = NextGCDAction = null;
     }
 
     internal static void UpdateNextAction()
@@ -91,32 +99,12 @@ internal static class ActionUpdater
         try
         {
             if (localPlayer != null && customRotation != null
-                && customRotation.TryInvoke(out var newAction, out var gcdAction))
+                && customRotation.TryInvoke(out var ogcdAction, out var gcdAction))
             {
-                if (Service.Config.MistakeRatio > 0)
-                {
-                    var actions = customRotation.AllActions.Where(a =>
-                    {
-                        if (a.ID == newAction?.ID) return false;
-                        if (a is IBaseAction action)
-                        {
-                            return !action.Setting.IsFriendly && action.Config.IsInMistake
-                            && action.Setting.TargetType != TargetType.Move
-                            && action.CanUse(out _, usedUp: true, skipStatusProvideCheck: true, skipClippingCheck: true, skipAoeCheck: true);
-                        }
-                        return false;
-                    });
+                NextOGCDAction = ogcdAction;
 
-                    var count = actions.Count();
-                    WrongAction = count > 0 ? actions.ElementAt(_wrongRandom.Next(count)) : null;
-                }
+                NextGCDAction = gcdAction;
 
-                NextAction = newAction;
-
-                if (gcdAction is IBaseAction GcdAction)
-                {
-                    NextGCDAction = GcdAction;
-                }
                 return;
             }
         }
@@ -126,15 +114,15 @@ internal static class ActionUpdater
             Svc.Log.Error(ex, "Failed to update next action.");
         }
 
-        WrongAction = NextAction = NextGCDAction = null;
+        NextOGCDAction = NextGCDAction = null;
     }
 
-    private static void SetAction(uint id) => Svc.PluginInterface.GetOrCreateData("Avarice.ActionOverride", 
+    private static void SetAction(uint id) => Svc.PluginInterface.GetOrCreateData("Avarice.ActionOverride",
         () => new List<uint>() { id })[0] = id;
 
     internal unsafe static void UpdateActionInfo()
     {
-        SetAction(NextGCDAction?.AdjustedID ?? 0);
+        SetAction(NextAction?.AdjustedID ?? 0);
         //UpdateWeaponTime();
         UpdateCombatTime();
         UpdateSlots();
@@ -264,6 +252,7 @@ internal static class ActionUpdater
 
     internal unsafe static bool CanDoAction()
     {
+        if (!DataCenter.IsActivated()) return false;
         if (Svc.Condition[ConditionFlag.OccupiedInQuestEvent]
             || Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent]
             || Svc.Condition[ConditionFlag.Occupied33]
@@ -276,25 +265,14 @@ internal static class ActionUpdater
             || Svc.Condition[ConditionFlag.SufferingStatusAffliction2]
             || Svc.Condition[ConditionFlag.RolePlaying]
             || Svc.Condition[ConditionFlag.InFlight]
-            || ActionManager.Instance()->ActionQueued && NextAction != null
-                && ActionManager.Instance()->QueuedActionId != NextAction.AdjustedID
+            || ActionManagerHelper.ActionQueued
             || Player.Object.CurrentHp == 0) return false;
-
-        var nextAction = NextAction;
-        if (nextAction == null) return false;
 
         //Skip when casting
         if (Player.Object.TotalCastTime - Service.Config.Action4Head > 0) return false;
 
-        //GCD
-        var canUseGCD = ActionHelper.CanUseGCD;
-        if (canUseGCD)
-        {
-            return RSCommands.CanDoAnAction(true);
-        }
-        else
-        {
-            return RSCommands.CanDoAnAction(false);
-        }
+
+
+        return true;
     }
 }

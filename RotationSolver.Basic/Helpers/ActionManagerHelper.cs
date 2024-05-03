@@ -43,5 +43,27 @@ namespace RotationSolver.Basic.Helpers
         {
             return GetRecastTimeElapsed(ActionType.Action, 11);
         }
+
+        public static unsafe bool ActionQueued
+        {
+            get
+            {
+                var actionManager = ActionManager.Instance();
+                if (actionManager == null) return false;
+
+                return actionManager->ActionQueued;
+            }
+        }
+
+        public static unsafe uint QueuedActionId
+        {
+            get
+            {
+                var actionManager = ActionManager.Instance();
+                if (actionManager == null) return 0;
+
+                return actionManager->QueuedActionId;
+            }
+        }
     }
 }

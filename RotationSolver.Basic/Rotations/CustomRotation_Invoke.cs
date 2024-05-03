@@ -3,9 +3,9 @@
 partial class CustomRotation
 {
     /// <inheritdoc/>
-    public bool TryInvoke(out IAction? newAction, out IAction? gcdAction)
+    public bool TryInvoke(out IAction? ogcdAction, out IAction? gcdAction)
     {
-        newAction = gcdAction = null;
+        ogcdAction = gcdAction = null;
         if (!IsEnabled)
         {
             return false;
@@ -20,7 +20,8 @@ partial class CustomRotation
             IBaseAction.ActionPreview = false;
 
             CountingOfLastUsing = CountingOfCombatTimeUsing = 0;
-            newAction = Invoke(out gcdAction);
+            gcdAction = GCD();
+            ogcdAction = Ability(gcdAction != null ? gcdAction : AddlePvE);
             if (InCombat || CountOfTracking == 0)
             {
                 AverageCountOfLastUsing =
@@ -49,7 +50,7 @@ partial class CustomRotation
             IsValid = false;
         }
 
-        return newAction != null;
+        return gcdAction != null || ogcdAction != null;
     }
 
     private void UpdateActions(JobRole role)
@@ -150,40 +151,6 @@ partial class CustomRotation
 
         ActionMoveBackAbility = MoveBackAbility(AddlePvE, out act) ? act : null;
         ActionSpeedAbility = SpeedAbility(AddlePvE, out act) ? act : null;
-    }
-
-    private IAction? Invoke(out IAction? gcdAction)
-    {
-        IBaseAction.ShouldEndSpecial = false;
-        IBaseAction.IgnoreClipping = true;
-
-        var countDown = Service.CountDownTime;
-        if (countDown > 0)
-        {
-            gcdAction = null;
-            return CountDownAction(countDown);
-        }
-        IBaseAction.TargetOverride = null;
-
-        gcdAction = GCD();
-        IBaseAction.IgnoreClipping = false;
-
-        if (gcdAction != null)
-        {
-            if (ActionHelper.CanUseGCD) return gcdAction;
-
-            if (Ability(gcdAction, out var ability)) return ability;
-
-            return gcdAction;
-        }
-        else
-        {
-            IBaseAction.IgnoreClipping = true;
-            if (Ability(AddlePvE, out var ability)) return ability;
-            IBaseAction.IgnoreClipping = false;
-
-            return null;
-        }
     }
 
     /// <summary>

@@ -43,9 +43,10 @@ internal static class StateUpdater
             && Service.Config.AutoUseTrueNorth)
         {
             var id = ActionUpdater.NextGCDAction.ID;
+            var baseAct = ActionUpdater.NextGCDAction as IBaseAction;
             if (ConfigurationHelper.ActionPositional.TryGetValue((ActionID)id, out var positional)
-                && positional != ActionUpdater.NextGCDAction.Target.Target?.FindEnemyPositional()
-                && (ActionUpdater.NextGCDAction.Target.Target?.HasPositional() ?? false))
+                && positional != baseAct?.Target.Target?.FindEnemyPositional()
+                && (baseAct?.Target.Target?.HasPositional() ?? false))
             {
                 status |= AutoStatus.Positional;
             }

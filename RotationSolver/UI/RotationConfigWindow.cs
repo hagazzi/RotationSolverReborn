@@ -2528,7 +2528,8 @@ public partial class RotationConfigWindow : Window
         ImGui.Text(DataCenter.RightNowRotation?.GetType().GetCustomAttribute<RotationAttribute>()!.Name);
         ImGui.Text(DataCenter.SpecialType.ToString());
 
-        ImGui.Text(ActionUpdater.NextAction?.Name ?? "null");
+        ImGui.Text("Next GCD: " + ActionUpdater.NextGCDAction?.Name ?? "null");
+        ImGui.Text("Next OGCD: " + ActionUpdater.NextOGCDAction?.Name ?? "null");
         ImGui.Text("GCD Total: " + DataCenter.DefaultGCDTotal.ToString());
         ImGui.Text("GCD Remain: " + DataCenter.DefaultGCDRemain.ToString());
         ImGui.Text("GCD Elapsed: " + DataCenter.DefaultGCDElapsed.ToString());

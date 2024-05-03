@@ -50,20 +50,6 @@ internal class NextActionWindow : Window
 
         var precent = 0f;
 
-        var group = ActionManager.Instance()->GetRecastGroupDetail(ActionHelper.GCDCooldownGroup - 1);
-        if (group ->Elapsed == group->Total || group->Total == 0)
-        {
-            precent = 1;
-        }
-        else
-        {
-            precent = group->Elapsed / group->Total;
-            if(ActionUpdater.NextAction != ActionUpdater.NextGCDAction)
-            {
-                precent++;
-            }
-        }
-
         ControlWindow.DrawIAction(ActionUpdater.NextAction, width, precent);
     }
 

@@ -2,51 +2,50 @@ namespace RotationSolver.Basic.Rotations;
 
 partial class CustomRotation
 {
-    private bool Ability(IAction nextGCD, out IAction? act)
+    private IAction? Ability(IAction nextGCD)
     {
-        act = DataCenter.CommandNextAction;
+        var act = DataCenter.CommandNextAction;
 
         IBaseAction.ForceEnable = true;
         if (act is IBaseAction a && a != null && !a.Info.IsRealGCD && a.CanUse(out _,
-            usedUp: true, skipAoeCheck: true)) return true;
+            usedUp: true, skipAoeCheck: true)) return act;
         IBaseAction.ForceEnable = false;
 
-        if (act is IBaseItem i && i.CanUse(out _, true)) return true;
+        if (act is IBaseItem i && i.CanUse(out _, true)) return act;
 
         if (!Service.Config.UseAbility || Player.TotalCastTime > 0)
         {
-            act = null!;
-            return false;
+            return null;
         }
 
-        if (EmergencyAbility(nextGCD, out act)) return true;
+        if (EmergencyAbility(nextGCD, out act)) return act;
         var role = DataCenter.Role;
 
         IBaseAction.TargetOverride = TargetType.Interrupt;
 
         if (DataCenter.MergedStatus.HasFlag(AutoStatus.Interrupt)
-            && MyInterruptAbility(role, nextGCD, out act)) return true;
+            && MyInterruptAbility(role, nextGCD, out act)) return act;
 
         IBaseAction.TargetOverride = TargetType.Tank;
         IBaseAction.ShouldEndSpecial = true;
 
         if (DataCenter.MergedStatus.HasFlag(AutoStatus.Shirk)
-            && ShirkPvE.CanUse(out act)) return true;
+            && ShirkPvE.CanUse(out act)) return act;
 
         IBaseAction.TargetOverride = null;
 
         if (DataCenter.MergedStatus.HasFlag(AutoStatus.TankStance)
-            && (TankStance?.CanUse(out act) ?? false)) return true;
+            && (TankStance?.CanUse(out act) ?? false)) return act;
 
 
         if (DataCenter.MergedStatus.HasFlag(AutoStatus.AntiKnockback)
-            && AntiKnockback(role, nextGCD, out act)) return true;
+            && AntiKnockback(role, nextGCD, out act)) return act;
 
         if (DataCenter.MergedStatus.HasFlag(AutoStatus.Positional))
         {
             if (TrueNorthPvE.Cooldown.CurrentCharges > 0)
             {
-                if (TrueNorthPvE.CanUse(out act, onLastAbility: true, skipClippingCheck: true, skipComboCheck: true, usedUp: true)) return true;
+                if (TrueNorthPvE.CanUse(out act, onLastAbility: true, skipClippingCheck: true, skipComboCheck: true, usedUp: true)) return act;
             }
         }
 
@@ -56,27 +55,27 @@ partial class CustomRotation
         if (DataCenter.CommandStatus.HasFlag(AutoStatus.HealAreaAbility))
         {
             IBaseAction.AllEmpty = true;
-            if (HealAreaAbility(nextGCD, out act)) return true;
+            if (HealAreaAbility(nextGCD, out act)) return act;
             IBaseAction.AllEmpty = false;
         }
         if (DataCenter.AutoStatus.HasFlag(AutoStatus.HealAreaAbility)
             && CanHealAreaAbility)
         {
             IBaseAction.AutoHealCheck = true;
-            if (HealAreaAbility(nextGCD, out act)) return true;
+            if (HealAreaAbility(nextGCD, out act)) return act;
             IBaseAction.AutoHealCheck = false;
         }
         if (DataCenter.CommandStatus.HasFlag(AutoStatus.HealSingleAbility))
         {
             IBaseAction.AllEmpty = true;
-            if (HealSingleAbility(nextGCD, out act)) return true;
+            if (HealSingleAbility(nextGCD, out act)) return act;
             IBaseAction.AllEmpty = false;
         }
         if (DataCenter.AutoStatus.HasFlag(AutoStatus.HealSingleAbility)
             && CanHealSingleAbility)
         {
             IBaseAction.AutoHealCheck = true;
-            if (HealSingleAbility(nextGCD, out act)) return true;
+            if (HealSingleAbility(nextGCD, out act)) return act;
             IBaseAction.AutoHealCheck = false;
         }
 
@@ -84,34 +83,34 @@ partial class CustomRotation
         IBaseAction.ShouldEndSpecial = true;
 
         if (DataCenter.CommandStatus.HasFlag(AutoStatus.Speed)
-            && SpeedAbility(nextGCD, out act)) return true;
+            && SpeedAbility(nextGCD, out act)) return act;
 
         if (DataCenter.MergedStatus.HasFlag(AutoStatus.Provoke))
         {
-            if (!HasTankStance && (TankStance?.CanUse(out act) ?? false)) return true;
+            if (!HasTankStance && (TankStance?.CanUse(out act) ?? false)) return act;
 
             IBaseAction.TargetOverride = TargetType.Provoke;
 
-            if (ProvokePvE.CanUse(out act)) return true;
-            if (ProvokeAbility(nextGCD, out act)) return true;
+            if (ProvokePvE.CanUse(out act)) return act;
+            if (ProvokeAbility(nextGCD, out act)) return act;
         }
 
         IBaseAction.TargetOverride = TargetType.BeAttacked;
 
         if (DataCenter.MergedStatus.HasFlag(AutoStatus.DefenseArea))
         {
-            if (DefenseAreaAbility(nextGCD, out act)) return true;
+            if (DefenseAreaAbility(nextGCD, out act)) return act;
             if (role is JobRole.Melee or JobRole.RangedPhysical or JobRole.RangedMagical)
             {
-                if (DefenseSingleAbility(nextGCD, out act)) return true;
+                if (DefenseSingleAbility(nextGCD, out act)) return act;
             }
         }
 
         if (DataCenter.MergedStatus.HasFlag(AutoStatus.DefenseSingle))
         {
-            if (DefenseSingleAbility(nextGCD, out act)) return true;
+            if (DefenseSingleAbility(nextGCD, out act)) return act;
             if (!DataCenter.IsHostileCastingToTank
-                && ArmsLengthPvE.CanUse(out act)) return true;
+                && ArmsLengthPvE.CanUse(out act)) return act;
         }
 
         IBaseAction.TargetOverride = null;
@@ -120,32 +119,32 @@ partial class CustomRotation
         if (DataCenter.MergedStatus.HasFlag(AutoStatus.MoveForward)
             && Player != null
             && !Player.HasStatus(true, StatusID.Bind)
-            && MoveForwardAbility(nextGCD, out act)) return true;
+            && MoveForwardAbility(nextGCD, out act)) return act;
 
         if (DataCenter.MergedStatus.HasFlag(AutoStatus.MoveBack)
-                && MoveBackAbility(nextGCD, out act)) return true;
+                && MoveBackAbility(nextGCD, out act)) return act;
         IBaseAction.AllEmpty = false;
 
         if (DataCenter.MergedStatus.HasFlag(AutoStatus.HealSingleAbility))
         {
-            if (UseHpPotion(nextGCD, out act)) return true;
+            if (UseHpPotion(nextGCD, out act)) return act;
         }
         IBaseAction.ShouldEndSpecial = false;
 
-        if (GeneralUsingAbility(role, nextGCD, out act)) return true;
+        if (GeneralUsingAbility(role, nextGCD, out act)) return act;
 
-        if (HasHostilesInRange && AttackAbility(nextGCD, out act)) return true;
-        if (GeneralAbility(nextGCD, out act)) return true;
+        if (HasHostilesInRange && AttackAbility(nextGCD, out act)) return act;
+        if (GeneralAbility(nextGCD, out act)) return act;
 
-        if (UseMpPotion(nextGCD, out act)) return true;
+        if (UseMpPotion(nextGCD, out act)) return act;
 
         //Run!
         if (DataCenter.AutoStatus.HasFlag(AutoStatus.Speed))
         {
-            if (SpeedAbility(nextGCD, out act)) return true;
+            if (SpeedAbility(nextGCD, out act)) return act;
         }
 
-        return false;
+        return null;
     }
 
     private bool MyInterruptAbility(JobRole role, IAction nextGCD, out IAction? act)
