@@ -143,31 +143,19 @@ public readonly struct ActionCooldownInfo : ICooldown
 
     internal bool CooldownCheck(bool isEmpty, bool onLastAbility, bool ignoreClippingCheck, byte gcdCountForAbility)
     {
-        if (!_action.Info.IsGeneralGCD)
+        if (_action.Info.IsRealGCD)
         {
-            if (IsCoolingDown)
+            if (IsCoolingDown && !HasOneCharge)
             {
-                if (_action.Info.IsRealGCD)
-                {
-                    if (!WillHaveOneChargeGCD(0, 0)) return false;
-                }
-                else
-                {
-                    if (!HasOneCharge && RecastTimeRemainOneChargeRaw > DataCenter.DefaultGCDRemain) return false;
-                }
-            }
-
-            if (!isEmpty)
-            {
-                if (RecastTimeRemain > DataCenter.DefaultGCDRemain * gcdCountForAbility)
-                    return false;
+                if (!WillHaveOneChargeGCD(gcdCountForAbility, 0)) return false;
             }
         }
-
-        if (!_action.Info.IsRealGCD)
+        else
         {
-            if (ActionManagerHelper.GetCurrentAnimationLock() > 0) return false;
+            if (IsCoolingDown && !HasOneCharge) return false;
+            if (ActionHelper.CanUseGCD) return false;
         }
+
         return true;
     }
 }
