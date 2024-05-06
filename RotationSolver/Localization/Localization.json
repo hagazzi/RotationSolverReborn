@@ -418,5 +418,11 @@
   "RotationSolver.Basic.Data.TargetingType.LowHP": "Low HP",
   "DefaultRotations.Ranged.MCH_zBeta.Name": "UseQueenWhenever",
   "DefaultRotations.Ranged.MCH_zBeta.DisplayName": "Uses Rook Autoturret/Automaton Queen immediately whenever you get 50 battery",
-  "RotationSolver.Basic.Data.TargetHostileType.AllTargetsWhenSolo": "All targets when solo, or previously engaged."
+  "RotationSolver.Basic.Data.TargetHostileType.AllTargetsWhenSolo": "All targets when solo, or previously engaged.",
+  "RotationSolver.Data.UiString.ConfigWindow_About_ThanksToSupporters": "Many thanks to the sponsors.",
+  "RotationSolver.Data.UiString.ConfigWindow_About_Compatibility_Others": "Please don't relog without closing the game. Crashes may occur.",
+  "RotationSolver.Data.UiString.ConfigWindow_About_Compatibility_Description": "Literally, Rotation Solver helps you to choose the target and then click the action. So any plugin that changes these will affect its decision.\n\nHere is a list of known incompatible plugins:",
+  "RotationSolver.Data.UiString.ConfigWindow_About_Compatibility_Mislead": "Conflicts with RSR decision making",
+  "RotationSolver.Data.UiString.ConfigWindow_About_Compatibility_Mistake": "Can't properly execute the behavior that RSR wants to do.",
+  "RotationSolver.Data.UiString.ConfigWindow_About_Compatibility_Crash": "Causes the game to crash."
 }
