@@ -330,6 +330,10 @@ internal partial class Configs : IPluginConfiguration
 
     private static readonly bool _targetQuestPriority = true;
 
+    [ConditionBool, UI("Ignore target dummies",
+               Filter = TargetConfig, Section = 1)]
+    private static readonly bool _disableTargetDummys = false;
+
     [ConditionBool, UI("Display do action feedback on toast",
         Filter =UiInformation)]
     private static readonly bool _showToastsAboutDoAction = false;
@@ -621,8 +625,8 @@ internal partial class Configs : IPluginConfiguration
 
     [UI("The minimum time between updating RSR information. (Setting too low can negatively effect framerate)",
         Filter = BasicTimer)]
-    [Range(0, 1, ConfigUnitType.Seconds, 0.002f)]
-    public float MinUpdatingTime { get; set; } = 0.00f;
+    [JobConfig, Range(0, 0.3f, ConfigUnitType.Seconds, 0.002f)]
+    public float MinUpdatingTime { get; set; } = 0.01f;
 
     [UI("The HP for using Guard.", 
         Filter = AutoActionCondition, Section = 3,
