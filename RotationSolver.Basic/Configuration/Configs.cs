@@ -461,10 +461,6 @@ internal partial class Configs : IPluginConfiguration
     [Range(1, 20, ConfigUnitType.Seconds, 1f)]
     public float SpecialDuration { get; set; } = 3;
 
-    [UI("Range of time before locking onto aggro'd or new target to attack", Description = "(Do not set too low, can rip newly aggro'd dungeon mobs off tanks).", Filter =TargetConfig)]
-    [Range(0, 3, ConfigUnitType.Seconds)]
-    public Vector2 TargetDelay { get; set; } = new(1, 2);
-
     [UI("Action Execution Delay.\n(RSR will not take actions during window).",
         Filter = BasicTimer)]
     [Range(0, 1, ConfigUnitType.Seconds, 0.002f)]
@@ -550,11 +546,6 @@ internal partial class Configs : IPluginConfiguration
     [UI("Control Progress Height")]
     [Range( 2, 30, ConfigUnitType.Yalms)]
     public float ControlProgressHeight { get; set; } = 8;
-
-    [UI("Use gapcloser as a damage ability if the distance to your target is less then this.",
-        Filter = TargetConfig, Section = 2)]
-    [Range(0, 30, ConfigUnitType.Yalms, 1f)]
-    public float DistanceForMoving { get; set; } = 1.2f;
 
     [UI("Stop healing when time to kill is lower then...", Parent = nameof(UseHealWhenNotAHealer))]
     [Range(0, 30, ConfigUnitType.Seconds, 0.02f)]
