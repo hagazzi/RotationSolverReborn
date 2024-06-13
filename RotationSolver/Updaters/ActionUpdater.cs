@@ -62,8 +62,24 @@ internal static class ActionUpdater
         NextAction = NextGCDAction = null;
     }
 
-    private static void SetAction(uint id) => Svc.PluginInterface.GetOrCreateData("Avarice.ActionOverride", 
-        () => new List<uint>() { id })[0] = id;
+    private static List<uint> actionOverrideList;
+
+    private static void SetAction(uint id)
+    {
+        if (actionOverrideList == null)
+        {
+            actionOverrideList = Svc.PluginInterface.GetOrCreateData("Avarice.ActionOverride", () => new List<uint>());
+        }
+
+        if (actionOverrideList.Count == 0)
+        {
+            actionOverrideList.Add(id);
+        }
+        else
+        {
+            actionOverrideList[0] = id;
+        }
+    }
 
     internal unsafe static void UpdateActionInfo()
     {
