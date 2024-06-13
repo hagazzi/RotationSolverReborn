@@ -444,11 +444,6 @@ internal partial class Configs : IPluginConfiguration
     [Range(0, 1, ConfigUnitType.Percent, 0.002f)]
     public float HealWhenNothingTodoBelow { get; set; } = 0.8f;
 
-    [UI("The size of the next ability that will be used icon.",
-        Parent =nameof(ShowTarget))]
-    [Range(0, 1, ConfigUnitType.Percent, 0.002f)]
-    public float TargetIconSize { get; set; } = 0.3f;
-
     [UI("Heal tank first if their HP is lower than this.",
         Filter = HealingActionCondition, Section = 1,
         PvEFilter = JobFilterType.Healer, PvPFilter = JobFilterType.Healer)]
