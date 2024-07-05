@@ -3,12 +3,12 @@ namespace RotationSolver.Basic.Rotations.Basic;
 partial class PictomancerRotation
 {
     /// <inheritdoc/>
-    public override MedicineType MedicineType => MedicineType.Intelligence;
+    //public override MedicineType MedicineType => MedicineType.Intelligence;
 
     /// <summary>
     /// 
     /// </summary>
-    public override bool CanHealSingleSpell => false;
+    //public override bool CanHealSingleSpell => false;
 
 
     #region JobGauge
@@ -16,9 +16,9 @@ partial class PictomancerRotation
     #endregion
 
     /// <inheritdoc/>
-    public override void DisplayStatus()
-    {
+    //public override void DisplayStatus()
+    //{
 
-    }
+    //}
 
 }
